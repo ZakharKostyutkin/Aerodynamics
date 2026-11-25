@@ -165,6 +165,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WindField
   _windCell: {fileID: 4518958286890138150, guid: 8402259f3949d0546bb72f34d72c48f4, type: 3}
   _firstHexPosition: {x: 0, y: 0, z: 0}
+  _generationRadius: 2
   _radius: 2
 --- !u!1 &330585543
 GameObject:
