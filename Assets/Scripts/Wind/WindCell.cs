@@ -6,16 +6,6 @@ public class WindCell : MonoBehaviour
     [SerializeField] private float _height = 2;
     [SerializeField] private float _radius = 2;
 
-    private float GetLowHeight()
-    {
-        return transform.position.y - _height / 2;
-    }
-
-    private float GetHighHeight()
-    {
-        return transform.position.y + _height / 2;
-    }
-
     private void OnDrawGizmos()
     {
         for (int i = 0; i < 6; i++)
