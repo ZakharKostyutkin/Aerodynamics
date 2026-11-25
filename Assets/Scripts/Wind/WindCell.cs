@@ -46,4 +46,9 @@ public class WindCell : MonoBehaviour
             Gizmos.DrawLine(worldBot, newWorldBot);
         }
     }
+
+    public void SetRadius(float radius)
+    {
+        _radius = radius;
+    }
 }

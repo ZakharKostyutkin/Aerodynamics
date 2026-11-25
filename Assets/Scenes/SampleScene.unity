@@ -128,28 +128,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 134314110}
-  - component: {fileID: 134314109}
+  - component: {fileID: 134314111}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: WindField
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &134314109
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 134314108}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 597c71f4d5236c54eafec30f8f62389a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WindCell
-  _height: 1
-  _radius: 2
 --- !u!4 &134314110
 Transform:
   m_ObjectHideFlags: 0
@@ -165,6 +151,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &134314111
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 134314108}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26c44421a788dac41beab85931804ba1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WindField
+  _windCell: {fileID: 4518958286890138150, guid: 8402259f3949d0546bb72f34d72c48f4, type: 3}
+  _firstHexPosition: {x: 0, y: 0, z: 0}
+  _radius: 2
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
