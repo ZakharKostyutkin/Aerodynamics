@@ -100,24 +100,24 @@ public class WindField : MonoBehaviour
         
         foreach (var cell in _airCellDatas)
         {
-            Vector2Int coord = cell.Key; // coord
+            Vector2Int coord = cell.Key; 
             AirCellData airCellData = cell.Value; 
             
-            Vector3 velocity = airCellData.Velocity; //direction
+            Vector3 direction = airCellData.Velocity; 
             
             if(!_windCells.TryGetValue(coord, out WindCell windCell))
                 continue;
             
-            Vector3 position = windCell.transform.position; //pos
-            Vector3 endPosition = position + velocity;
+            Vector3 position = windCell.transform.position; 
+            Vector3 endPosition = position + direction;
             
             Gizmos.color = Color.blue;
             
             Gizmos.DrawLine(position, endPosition);
 
-            Vector3 backward = -velocity.normalized;
+            Vector3 backward = -direction.normalized;
             
-            float length = velocity.magnitude * _airArrowHeadScale;
+            float length = direction.magnitude * _airArrowHeadScale;
             
             Vector3 arrowRight = Quaternion.AngleAxis(33, Vector3.up) * backward;
             Vector3 arrowLeft = Quaternion.AngleAxis(-33f, Vector3.up) * backward;
