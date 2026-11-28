@@ -5,19 +5,20 @@ using UnityEngine.Rendering;
 
 public class WindFieldRenderer : MonoBehaviour
 {
-    [SerializeField] private float _height = 2;
-    [SerializeField] private float _radius = 2;
-    [SerializeField] private float _airArrowHeadScale = 1;
     
     [SerializeField] private MeshFilter _meshFilter;
     
     [Header("Debugging")]
+    [SerializeField]  private float _airArrowHeadScale = 1;
     [SerializeField] private bool _debugHex = false;
     [SerializeField] private bool _debugWindArrow = false;
     
     private Vector3 _fieldOrigin;
     private Dictionary<Vector2Int, AirCellData> _airCellDatas;
     private Mesh _mesh;
+    
+    private float _height = 2;
+    private float _radius = 2;
 
     public void InitializeMesh()
     {
@@ -58,6 +59,10 @@ public class WindFieldRenderer : MonoBehaviour
     
     private void BuildMesh()
     {
+        Vector3[] vertices = GetFieldVertices().ToArray();
+
+        Debug.Log($"Mesh top Y: {vertices[0].y}");
+        Debug.Log($"Mesh bottom Y: {vertices[6].y}");
         
         _mesh.SetVertices(GetFieldVertices());
         _mesh.SetTriangles(CombineTriangles(), 0);
@@ -160,6 +165,11 @@ public class WindFieldRenderer : MonoBehaviour
     public void SetRadius(float radius)
     {
         _radius = radius;
+    }
+    
+    public void SetHeight(float height)
+    {
+        _height = height;
     }
 
     public void SetFieldOrigin(Vector3 origin)

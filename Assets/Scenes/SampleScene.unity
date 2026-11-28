@@ -167,6 +167,7 @@ MonoBehaviour:
   _firstHexPosition: {x: 0, y: 0, z: 0}
   _generationRadius: 32
   _radius: 32
+  _height: 10
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -511,10 +512,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69654bc15d010594eae2a039b6098a2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WindFieldRenderer
-  _height: 0.5
-  _radius: 2
-  _airArrowHeadScale: 0.34
   _meshFilter: {fileID: 1995804764}
+  _airArrowHeadScale: 1
   _debugHex: 0
   _debugWindArrow: 0
 --- !u!4 &1995804763
@@ -565,7 +564,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 3bb099401fc3c9248878eb1770eeb0f6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

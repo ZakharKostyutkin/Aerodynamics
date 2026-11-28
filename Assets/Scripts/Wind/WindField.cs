@@ -8,6 +8,7 @@ public class WindField : MonoBehaviour
     [SerializeField] private Vector3 _firstHexPosition;
     [SerializeField] private int _generationRadius = 2;
     [SerializeField] private float _radius = 2;
+    [SerializeField] private float _height = 2;
     
     private readonly Dictionary<Vector2Int, AirCellData> _airCellDatas = new Dictionary<Vector2Int, AirCellData>();
     
@@ -45,7 +46,7 @@ public class WindField : MonoBehaviour
                 }
             }
         }
-        
+        _renderer.SetHeight(_height);
         _renderer.SetRadius(_radius);
         _renderer.SetFieldOrigin(_firstHexPosition);
         _renderer.DrawAirField(_airCellDatas);
