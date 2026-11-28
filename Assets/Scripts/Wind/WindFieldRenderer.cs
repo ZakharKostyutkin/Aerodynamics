@@ -21,12 +21,153 @@ public class WindFieldRenderer : MonoBehaviour
 
     public void InitializeMesh()
     {
+        CreateMesh();
+        BuildMesh();
+    }
+
+    private Vector3[] GetMeshVertices(Vector3 position)
+    {
+        position += _fieldOrigin;
+        Vector3 localPosition = transform.InverseTransformPoint(position);
+        Vector3[] vertices = new Vector3[12];
+        for (int i = 0; i < 12; i++)
+        {
+
+            float angle = 60 * i - 30;
+            float radians = angle * Mathf.Deg2Rad;
+            
+            float multiplier = i < 6 ? 1f : -1f;
+
+            Vector3 vertex = localPosition + new Vector3(
+                _radius * Mathf.Cos(radians),
+                _height * multiplier / 2,
+                _radius * Mathf.Sin(radians));
+            
+            vertices[i] = vertex;
+        }
+        return vertices;
+    }
+
+    private void CreateMesh()
+    {
         _mesh = new Mesh();
         _mesh.name = "WindField Mesh";
         _mesh.indexFormat = IndexFormat.UInt32;
 
-        BuildMesh();
     }
+    
+    private void BuildMesh()
+    {
+        
+        _mesh.SetVertices(GetFieldVertices());
+        _mesh.SetTriangles(CombineTriangles(), 0);
+        _mesh.RecalculateNormals();
+        
+        _meshFilter.mesh = _mesh;
+    }
+
+    private List<Vector3> GetFieldVertices()
+    {
+        List<Vector3> vertices = new List<Vector3>();
+
+        foreach (var cell in _airCellDatas)
+        {
+            Vector2Int coord = cell.Key; 
+            
+            float positionX = Mathf.Sqrt(3) * _radius * (coord.x + (coord.y / 2f));
+            float positionZ = 3f / 2f * _radius * coord.y;
+        
+            Vector3 pos = new Vector3(positionX, 0, positionZ);
+            
+            Vector3[] cellVert = GetMeshVertices(pos);
+            vertices.AddRange(cellVert);
+        }
+        return vertices;
+    }
+
+    private List<int> GetFieldTopTriangles()
+    {
+        List<int> triangles = new List<int>(_airCellDatas.Count * 12);
+        int vertexIndex = 0;
+        foreach (var cell in _airCellDatas)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                triangles.Add(vertexIndex);
+                triangles.Add(i + 2 + vertexIndex);
+                triangles.Add(i + 1 + vertexIndex);
+            }
+            vertexIndex += 12;
+        }
+        return triangles;
+    }
+    private List<int> GetFieldBottomTriangles()
+    {
+        List<int> triangles = new List<int>(_airCellDatas.Count * 12);
+        int vertexIndex = 0;
+        foreach (var cell in _airCellDatas)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                triangles.Add(vertexIndex + 6);
+                triangles.Add(i + 1 + vertexIndex + 6);
+                triangles.Add(i + 2 + vertexIndex + 6);
+            }
+            vertexIndex += 12;
+        }
+        return triangles;
+    }
+
+    private List<int> GetFieldSideTriangles()
+    {
+        List<int> triangles = new List<int>(_airCellDatas.Count * 36);
+        int vertexIndex = 0;
+
+        foreach (var cell in _airCellDatas)
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                int topCurrent = vertexIndex + i;
+                int topNext = vertexIndex + (i + 1) % 6;
+                
+                int botCurrent = vertexIndex + i + 6;
+                int botNext = vertexIndex + (i + 1) % 6 + 6;
+                
+                triangles.Add(topCurrent);
+                triangles.Add(topNext);
+                triangles.Add(botCurrent);
+                
+                triangles.Add(topNext);
+                triangles.Add(botNext);
+                triangles.Add(botCurrent);
+            }
+            vertexIndex += 12;
+        }
+        return triangles;
+    }
+
+    private List<int> CombineTriangles()
+    {
+        List<int> triangles = new List<int>(_airCellDatas.Count * 60);
+        
+        triangles.AddRange(GetFieldTopTriangles());
+        triangles.AddRange(GetFieldBottomTriangles());
+        triangles.AddRange(GetFieldSideTriangles());
+        
+        return triangles;
+    }
+    
+    public void SetRadius(float radius)
+    {
+        _radius = radius;
+    }
+
+    public void SetFieldOrigin(Vector3 origin)
+    {
+        _fieldOrigin = origin;
+    }
+
+    #region Gizmos
 
     private void OnDrawGizmos()
     {
@@ -49,14 +190,12 @@ public class WindFieldRenderer : MonoBehaviour
             Vector3 position = new Vector3(positionX, 0, positionZ) + _fieldOrigin; 
             Vector3 endPosition = position + direction;
             
-            
             DrawVelocity(position, endPosition, direction);
-            
             
             DrawHex(position);
         }
     }
-
+    
     private void DrawVelocity(Vector3 position, Vector3 endPosition, Vector3 direction)
     {
         if (!_debugWindArrow)
@@ -128,92 +267,5 @@ public class WindFieldRenderer : MonoBehaviour
         _airCellDatas = airCellDatas;
     }
 
-    public void SetRadius(float radius)
-    {
-        _radius = radius;
-    }
-
-    public void SetFieldOrigin(Vector3 origin)
-    {
-        _fieldOrigin = origin;
-    }
-
-    private Vector3[] GetMeshVertices(Vector3 position)
-    {
-        position += _fieldOrigin;
-        Vector3 localPosition = transform.InverseTransformPoint(position);
-        Vector3[] vertices = new Vector3[6];
-        for (int i = 0; i < 6; i++)
-        {
-
-            float angle = 60 * i - 30;
-            float radians = angle * Mathf.Deg2Rad;
-
-            Vector3 vertex = localPosition + new Vector3(
-                _radius * Mathf.Cos(radians),
-                _height / 2,
-                _radius * Mathf.Sin(radians));
-            
-            vertices[i] = vertex;
-        }
-        return vertices;
-    }
-    
-    private int[] GetMeshTriangles()
-    {
-        int[] triangles = new int[12];
-        for (int i = 0; i < 4; i++)
-        {
-            triangles[i * 3] = 0;
-            triangles[i * 3 + 1] = i + 1;
-            triangles[i * 3 + 2] = i + 2;
-        }
-        return triangles;
-    }
-
-    private void BuildMesh()
-    {
-        _mesh.SetVertices(GetFieldVertices());
-        _mesh.SetTriangles(GetFieldTriangles(), 0);
-        
-        _mesh.RecalculateNormals();
-        _meshFilter.mesh = _mesh;
-    }
-
-    private List<Vector3> GetFieldVertices()
-    {
-        List<Vector3> vertices = new List<Vector3>();
-
-        foreach (var cell in _airCellDatas)
-        {
-            Vector2Int coord = cell.Key; 
-            
-            float positionX = Mathf.Sqrt(3) * _radius * (coord.x + (coord.y / 2f));
-            float positionZ = 3f / 2f * _radius * coord.y;
-        
-            Vector3 pos = new Vector3(positionX, 0, positionZ);
-            
-            Vector3[] cellVert = GetMeshVertices(pos);
-            vertices.AddRange(cellVert);
-        }
-        return vertices;
-    }
-
-    private List<int> GetFieldTriangles()
-    {
-        List<int> triangles = new List<int>(_airCellDatas.Count * 12);
-        int vertexIndex = 0;
-        foreach (var cell in _airCellDatas)
-        {
-            for (int i = 0; i < 4; i++)
-            {
-                triangles.Add(vertexIndex);
-                triangles.Add(i + 1 + vertexIndex);
-                triangles.Add(i + 2 + vertexIndex);
-            }
-
-            vertexIndex += 6;
-        }
-        return triangles;
-    }
+    #endregion
 }
