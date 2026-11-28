@@ -44,13 +44,13 @@ public class WindField : MonoBehaviour
                     GenerateAir(nextCoord);
                 }
             }
-            
-            _renderer.InitializeMesh();
         }
         
         _renderer.SetRadius(_radius);
         _renderer.SetFieldOrigin(_firstHexPosition);
         _renderer.DrawAirField(_airCellDatas);
+        
+        _renderer.InitializeMesh();
     }
 
     

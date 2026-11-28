@@ -165,8 +165,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WindField
   _renderer: {fileID: 1995804762}
   _firstHexPosition: {x: 0, y: 0, z: 0}
-  _generationRadius: 128
-  _radius: 128
+  _generationRadius: 32
+  _radius: 32
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
