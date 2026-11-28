@@ -4,19 +4,12 @@ using UnityEngine;
 
 public class WindField : MonoBehaviour
 {
-    [SerializeField]
-    private WindCell _windCell;
-
+    [SerializeField] private WindFieldRenderer _renderer;
     [SerializeField] private Vector3 _firstHexPosition;
     [SerializeField] private int _generationRadius = 2;
     [SerializeField] private float _radius = 2;
     
-    private readonly Dictionary<Vector2Int, WindCell> _windCells = new Dictionary<Vector2Int, WindCell>();
     private readonly Dictionary<Vector2Int, AirCellData> _airCellDatas = new Dictionary<Vector2Int, AirCellData>();
-
-    [Header("Debug")]
-    [SerializeField] private bool _debug;
-    [SerializeField] private float _airArrowHeadScale = 1;
     
     static readonly Vector2Int[] NeighborDirections =
     {
@@ -29,18 +22,12 @@ public class WindField : MonoBehaviour
     };
 
 
-    private void Start()
+    private void Awake()
     {
-        GameObject hexGO = Instantiate(_windCell.gameObject, _firstHexPosition, Quaternion.identity);
-        WindCell hex = hexGO.GetComponent<WindCell>();
-        hex.SetRadius(_radius);
-        
         Vector2Int startCoord = Vector2Int.zero;
 
         GenerateAir(startCoord);
         EditAir(startCoord, Vector3.right * 2); 
-        
-        _windCells.Add(startCoord, hex);
         
         for (int i = 1; i < _generationRadius + 1; i++)
         {
@@ -53,29 +40,20 @@ public class WindField : MonoBehaviour
                     
                     Vector2Int nextCoord = currentCoord + direction;
                     currentCoord = nextCoord;
-
-                    if (_windCells.ContainsKey(currentCoord))
-                        continue;
-            
-                    GameObject hexGO1 = Instantiate(_windCell.gameObject, _firstHexPosition, Quaternion.identity);
-                    WindCell hex1 = hexGO1.GetComponent<WindCell>();
-                    hex1.SetRadius(_radius);
             
                     GenerateAir(nextCoord);
-                    CalculateHexPosition(hexGO1.transform,hexGO.transform,nextCoord.x,  nextCoord.y);
                 }
             }
+            
+            _renderer.InitializeMesh();
         }
+        
+        _renderer.SetRadius(_radius);
+        _renderer.SetFieldOrigin(_firstHexPosition);
+        _renderer.DrawAirField(_airCellDatas);
     }
 
-    private void CalculateHexPosition(Transform hex, Transform parentHex, int q, int r)
-    {
-        float positionX = Mathf.Sqrt(3) * _radius * (q + (r / 2f)) + parentHex.position.x;
-        float positionZ = 3f / 2f * _radius * r + parentHex.position.z;
-        
-        hex.transform.position = new Vector3(positionX, parentHex.position.y, positionZ);
-        _windCells.Add(new Vector2Int(q,r), hex.GetComponent<WindCell>());
-    }
+    
 
     private void EditAir(Vector2Int coord, Vector3 direction)
     {
@@ -91,42 +69,5 @@ public class WindField : MonoBehaviour
         AirCellData airCellData;
         airCellData.Velocity = Vector3.forward;
         _airCellDatas.TryAdd(coordinates, airCellData);
-    }
-
-    private void OnDrawGizmos()
-    {
-        if (!_debug)
-            return;
-        
-        foreach (var cell in _airCellDatas)
-        {
-            Vector2Int coord = cell.Key; 
-            AirCellData airCellData = cell.Value; 
-            
-            Vector3 direction = airCellData.Velocity; 
-            
-            if(!_windCells.TryGetValue(coord, out WindCell windCell))
-                continue;
-            
-            Vector3 position = windCell.transform.position; 
-            Vector3 endPosition = position + direction;
-            
-            Gizmos.color = Color.blue;
-            
-            Gizmos.DrawLine(position, endPosition);
-
-            Vector3 backward = -direction.normalized;
-            
-            float length = direction.magnitude * _airArrowHeadScale;
-            
-            Vector3 arrowRight = Quaternion.AngleAxis(33, Vector3.up) * backward;
-            Vector3 arrowLeft = Quaternion.AngleAxis(-33f, Vector3.up) * backward;
-
-            Vector3 right = endPosition + arrowRight * length;
-            Vector3 left = endPosition + arrowLeft * length;
-
-            Gizmos.DrawLine(endPosition, right);
-            Gizmos.DrawLine(endPosition, left);
-        }
     }
 }
